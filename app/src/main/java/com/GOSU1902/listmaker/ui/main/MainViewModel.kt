@@ -8,10 +8,10 @@ import com.GOSU1902.listmaker.TaskList
 class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     lateinit var onListAdded: (() -> Unit)
     val lists: MutableList<TaskList> by lazy {
-        retrieveList()
+        retrieveLists()
     }
 
-    private fun retrieveList(): MutableList<TaskList> {
+    private fun retrieveLists(): MutableList<TaskList> {
         val sharedPreferencesContents = sharedPreferences.all
         val taskLists = ArrayList<TaskList>()
         for (taskList in sharedPreferencesContents) {
@@ -26,6 +26,19 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         sharedPreferences.edit().putStringSet(list.name, list.tasks.toHashSet()).apply()
         lists.add(list)
         onListAdded.invoke()
+    }
+
+    fun updateList(list: TaskList) {
+        sharedPreferences.edit().putStringSet(
+            list.name,
+            list.tasks.toHashSet()
+        ).apply()
+        lists.add(list)
+    }
+
+    fun refreshLists() {
+        lists.clear()
+        lists.addAll(retrieveLists())
     }
 }
 
